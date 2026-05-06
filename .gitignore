@@ -1,14 +1,19 @@
 # Python
-venv/
 __pycache__/
 *.pyc
+.venv/
+venv/
+backend/venv/
+.env
 
 # Node
 node_modules/
-.expo/
+dist/
 
-# Env
-.env
+# IDE
+.vscode/
+.idea/
 
 # OS
 .DS_Store
+Thumbs.db
