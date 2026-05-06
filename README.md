@@ -1,4 +1,4 @@
-# GiveWings — Open Source Launch Guide
+# GiveWings — Guide
 
 # 🌍 GiveWings
 
