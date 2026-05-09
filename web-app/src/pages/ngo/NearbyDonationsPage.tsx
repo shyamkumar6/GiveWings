@@ -22,7 +22,7 @@ export default function NearbyDonationsPage() {
 
 
   /* =========================
-     FETCH NEARBY DONATIONS
+     FETCH DONATIONS
   ========================= */
 
   useEffect(() => {
@@ -86,8 +86,6 @@ export default function NearbyDonationsPage() {
         listingId
       );
 
-      // Remove accepted donation
-      // instantly from UI
       setDonations((prev) =>
         prev.filter(
           (item) =>
@@ -109,36 +107,61 @@ export default function NearbyDonationsPage() {
     }
   };
 
+
+  /* =========================
+     OPEN GOOGLE MAPS
+  ========================= */
+
+  const openInMaps = (
+    lat: number,
+    lng: number
+  ) => {
+
+    const url =
+      `https://www.google.com/maps?q=${lat},${lng}`;
+
+    window.open(
+      url,
+      "_blank"
+    );
+  };
+
+
+  /* =========================
+     URGENCY LOGIC
+  ========================= */
+
   const getUrgency = (
-  expiryTime: string
-) => {
+    expiryTime: string
+  ) => {
 
-  if (!expiryTime)
-    return null;
+    if (!expiryTime)
+      return null;
 
-  const expiry =
-    new Date(expiryTime);
+    const expiry =
+      new Date(expiryTime);
 
-  const now =
-    new Date();
+    const now =
+      new Date();
 
-  const diffHours =
-    (
-      expiry.getTime()
-      -
-      now.getTime()
-    ) / (1000 * 60 * 60);
+    const diffHours =
+      (
+        expiry.getTime()
+        -
+        now.getTime()
+      ) / (1000 * 60 * 60);
 
-  if (diffHours <= 2) {
-    return "URGENT";
-  }
+    if (diffHours <= 2) {
+      return "URGENT";
+    }
 
-  if (diffHours <= 6) {
-    return "HIGH PRIORITY";
-  }
+    if (diffHours <= 6) {
+      return "HIGH PRIORITY";
+    }
 
-  return "NORMAL";
-};
+    return "NORMAL";
+  };
+
 
 const openInMaps = (
   lat: number,
@@ -155,6 +178,7 @@ const openInMaps = (
 };
 
   return (
+
     <DashboardLayout>
 
       <div>
@@ -189,12 +213,14 @@ const openInMaps = (
         ========================= */}
 
         {loading && (
+
           <p className="
             text-lg
             text-gray-500
           ">
             Loading nearby donations...
           </p>
+
         )}
 
 
@@ -233,7 +259,7 @@ const openInMaps = (
 
 
         {/* =========================
-            DONATION CARDS
+            DONATION GRID
         ========================= */}
 
         <div className="
@@ -251,82 +277,119 @@ const openInMaps = (
               className="
                 bg-white
                 rounded-3xl
-                p-6
+                overflow-hidden
                 shadow-sm
+                border
+                border-gray-100
               "
             >
 
-              {/* Category */}
-              <div className="
-                inline-block
-                px-3
-                py-1
-                rounded-full
-                bg-green-100
-                text-green-700
-                text-sm
-                font-medium
-              ">
-                {item.category}
-              </div>
+              {/* =========================
+                  IMAGE
+              ========================= */}
 
-              <div className="
-                mt-4
-                text-sm
-                text-green-600
-                font-semibold
-              ">
+              {
+                item.image_url && (
 
-                📍 {item.distance_km} km away
+                  <img
+                    src={item.image_url}
+                    alt={item.title}
 
-              </div>
-              {/* Title */}
-              <h2 className="
-                text-2xl
-                font-bold
-                mt-4
-              ">
-                {item.title}
-              </h2>
+                    className="
+                      w-full
+                      h-56
+                      object-cover
+                    "
+                  />
+
+                )
+              }
 
 
-              {/* Description */}
-              <p className="
-                text-gray-600
-                mt-3
-              ">
-                {item.description}
-              </p>
+              <div className="p-6">
 
-              {/* Donor Info */}
-              <div className="
-                mt-5
-                space-y-2
-                text-sm
-                text-gray-600
-              ">
+                {/* Category */}
 
-                <p>
-                  <span className="font-semibold">
-                    Donor:
-                  </span>
+                <div className="
+                  inline-block
+                  px-3
+                  py-1
+                  rounded-full
+                  bg-green-100
+                  text-green-700
+                  text-sm
+                  font-medium
+                ">
+                  {item.category}
+                </div>
 
-                  {" "}
-                  {item.donor?.name}
+
+                {/* Distance */}
+
+                <div className="
+                  mt-4
+                  text-sm
+                  text-green-600
+                  font-semibold
+                ">
+                  📍 {item.distance_km} km away
+                </div>
+
+
+                {/* Title */}
+
+                <h2 className="
+                  text-2xl
+                  font-bold
+                  mt-4
+                ">
+                  {item.title}
+                </h2>
+
+
+                {/* Description */}
+
+                <p className="
+                  text-gray-600
+                  mt-3
+                ">
+                  {item.description}
                 </p>
 
-                <p>
-                  <span className="font-semibold">
-                    Email:
-                  </span>
 
-                  {" "}
-                  {item.donor?.email}
-                </p>
+                {/* Donor Info */}
 
-              </div>
+                <div className="
+                  mt-5
+                  space-y-2
+                  text-sm
+                  text-gray-600
+                ">
 
-              <div className="
+                  <p>
+                    <span className="font-semibold">
+                      Donor:
+                    </span>
+
+                    {" "}
+                    {item.donor?.name}
+                  </p>
+
+                  <p>
+                    <span className="font-semibold">
+                      Email:
+                    </span>
+
+                    {" "}
+                    {item.donor?.email}
+                  </p>
+
+                </div>
+
+
+                {/* Location */}
+
+                <div className="
                   mt-4
                   text-sm
                   text-gray-500
@@ -336,7 +399,10 @@ const openInMaps = (
 
                 </div>
 
-              <div className="
+
+                {/* Coordinates */}
+
+                <div className="
                   mt-4
                   text-sm
                   text-gray-500
@@ -347,11 +413,11 @@ const openInMaps = (
                   </p>
 
                   <p>
-                      Lat:
-                      {" "}
-                      {
-                        item.location.coordinates[1]
-                      }
+                    Lat:
+                    {" "}
+                    {
+                      item.location.coordinates[1]
+                    }
                   </p>
 
                   <p>
@@ -363,68 +429,57 @@ const openInMaps = (
                   </p>
 
                 </div>
-                    {
-                      item.expiry_time && (
-
-                        <div className="
-                          mt-4
-                          text-sm
-                          text-red-500
-                          font-medium
-                        ">
-
-                          Expires:
-                          {" "}
-
-                          {
-                            new Date(
-                              item.expiry_time
-                            ).toLocaleString()
-                          }
-
-                        </div>
-
-                      )
-                    }
-
-                    {
-                      item.expiry_time && (
-
-                        <div className="
-                          mt-3
-                          inline-block
-                          px-3
-                          py-1
-                          rounded-full
-                          bg-red-100
-                          text-red-700
-                          text-xs
-                          font-semibold
-                        ">
-
-                          {
-                            getUrgency(
-                              item.expiry_time
-                            )
-                          }
-
-                        </div>
-
-                      )
-                    }
-
-              {/* Quantity */}
-              <div className="
-                mt-6
-                text-lg
-                font-semibold
-              ">
-                {item.quantity}
-                {" "}
-                {item.unit}
-              </div>
 
 
+                {/* Expiry */}
+
+                {
+                  item.expiry_time && (
+
+                    <div className="
+                      mt-4
+                      text-sm
+                      text-red-500
+                      font-medium
+                    ">
+
+                      Expires:
+                      {" "}
+
+                      {
+                        new Date(
+                          item.expiry_time
+                        ).toLocaleString()
+                      }
+
+                    </div>
+
+                  )
+                }
+
+
+                {/* Urgency */}
+
+                {
+                  item.expiry_time && (
+
+                    <div className="
+                      mt-3
+                      inline-block
+                      px-3
+                      py-1
+                      rounded-full
+                      bg-red-100
+                      text-red-700
+                      text-xs
+                      font-semibold
+                    ">
+
+                      {
+                        getUrgency(
+                          item.expiry_time
+                        )
+                      }
               {/* Status */}
               <div className="
                 mt-4
@@ -467,27 +522,96 @@ const openInMaps = (
 
               </button>
 
-              {/* Accept Button */}
-              <button
+                    </div>
 
-                onClick={() =>
-                  handleAccept(item._id)
+                  )
                 }
 
-                className="
+
+                {/* Quantity */}
+
+                <div className="
                   mt-6
-                  w-full
-                  py-3
-                  rounded-2xl
-                  bg-green-500
-                  hover:bg-green-600
-                  text-white
+                  text-lg
                   font-semibold
-                  transition
-                "
-              >
-                Accept Donation
-              </button>
+                ">
+                  {item.quantity}
+                  {" "}
+                  {item.unit}
+                </div>
+
+
+                {/* Status */}
+
+                <div className="
+                  mt-4
+                  inline-block
+                  px-3
+                  py-1
+                  rounded-full
+                  bg-yellow-100
+                  text-yellow-700
+                  text-sm
+                  font-medium
+                ">
+                  {item.status}
+                </div>
+
+
+                {/* Maps Button */}
+
+                <button
+
+                  onClick={() =>
+                    openInMaps(
+                      item.location.coordinates[1],
+                      item.location.coordinates[0]
+                    )
+                  }
+
+                  className="
+                    mt-6
+                    w-full
+                    py-3
+                    rounded-2xl
+                    border
+                    border-green-500
+                    text-green-600
+                    hover:bg-green-50
+                    font-semibold
+                    transition
+                  "
+                >
+
+                  Open in Maps
+
+                </button>
+
+
+                {/* Accept Button */}
+
+                <button
+
+                  onClick={() =>
+                    handleAccept(item._id)
+                  }
+
+                  className="
+                    mt-4
+                    w-full
+                    py-3
+                    rounded-2xl
+                    bg-green-500
+                    hover:bg-green-600
+                    text-white
+                    font-semibold
+                    transition
+                  "
+                >
+                  Accept Donation
+                </button>
+
+              </div>
 
             </div>
 
@@ -498,5 +622,6 @@ const openInMaps = (
       </div>
 
     </DashboardLayout>
+
   );
 }
