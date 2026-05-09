@@ -9,7 +9,7 @@ import Button from "../../components/ui/button/Button";
 
 import CategoryCard from "../../components/listing/CategoryCard";
 
-import { createListing } from "../../services/listingService";
+import { createListing, uploadDonationImage } from "../../services/listingService";
 
 const categories = [
   "FOOD",
@@ -36,10 +36,16 @@ export default function CreateListingPage() {
     useState("");
 
   const [location, setLocation] =
-  useState({
-    latitude: 0,
-    longitude: 0,
-  });
+    useState({
+      latitude: 0,
+      longitude: 0,
+    });
+
+  const [imageFile, setImageFile] =
+    useState<File | null>(null);
+
+  const [imagePreview, setImagePreview] =
+    useState("");
 
   useEffect(() => {
 
@@ -78,6 +84,18 @@ export default function CreateListingPage() {
 
         return;
     }
+    let imageUrl = "";
+
+    if (imageFile) {
+
+      const uploadResult =
+        await uploadDonationImage(
+          imageFile
+        );
+
+      imageUrl =
+        uploadResult.image_url;
+    }
     try {
       await createListing({
         title,
@@ -103,6 +121,7 @@ export default function CreateListingPage() {
                 location.latitude,
             ],
         },
+        image_url: imageUrl,
       });
 
       alert("Donation  created successfully");
@@ -243,7 +262,53 @@ Fresh surplus food from event
               }
             />
           </div>
+          <div className="mt-6">
 
+            <label className="
+              block
+              mb-2
+              font-medium
+            ">
+              Donation Image
+            </label>
+
+            <input
+              type="file"
+              accept="image/*"
+
+              onChange={(e) => {
+
+                const file =
+                  e.target.files?.[0];
+
+                if (!file) return;
+
+                setImageFile(file);
+
+                setImagePreview(
+                  URL.createObjectURL(file)
+                );
+              }}
+            />
+              {
+                imagePreview && (
+
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+
+                    className="
+                      mt-4
+                      rounded-2xl
+                      h-52
+                      object-cover
+                      w-full
+                    "
+                  />
+
+                )
+              }
+          </div>
           {/* Submit */}
           <div className="mt-10">
             <Button

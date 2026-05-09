@@ -207,3 +207,34 @@ export const getMyDonations =
 
     return await response.json();
 };
+
+export const uploadDonationImage =
+  async (
+    file: File
+  ) => {
+
+    const formData =
+      new FormData();
+
+    formData.append(
+      "file",
+      file
+    );
+
+    const response = await fetch(
+      `${API}/upload-image`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+
+      throw new Error(
+        "Image upload failed"
+      );
+    }
+
+    return await response.json();
+};

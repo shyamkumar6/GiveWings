@@ -12,6 +12,8 @@ from app.db.mongo import (
     listing_collection,
     user_collection
 )
+from fastapi import UploadFile, File
+import cloudinary.uploader
 
 
 router = APIRouter(
@@ -151,6 +153,8 @@ async def nearby_listings(
                     item["location"]["coordinates"][1],
                     item["location"]["coordinates"][0]
                 ),
+            "image_url":
+                item.get("image_url"),
             # Donor Details
             "donor": {
 
@@ -257,3 +261,18 @@ async def my_donations(
         })
 
     return result
+
+@router.post("/upload-image")
+async def upload_listing_image(
+    file: UploadFile = File(...)
+):
+
+    result = cloudinary.uploader.upload(
+        file.file,
+        folder="givewings/donations"
+    )
+
+    return {
+        "image_url":
+            result["secure_url"]
+    }
