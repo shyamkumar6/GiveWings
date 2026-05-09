@@ -140,6 +140,20 @@ export default function NearbyDonationsPage() {
   return "NORMAL";
 };
 
+const openInMaps = (
+  lat: number,
+  lng: number
+) => {
+
+  const url =
+    `https://www.google.com/maps?q=${lat},${lng}`;
+
+  window.open(
+    url,
+    "_blank"
+  );
+};
+
   return (
     <DashboardLayout>
 
@@ -425,7 +439,33 @@ export default function NearbyDonationsPage() {
               ">
                 {item.status}
               </div>
+              
+              <button
 
+                onClick={() =>
+                  openInMaps(
+                    item.location.coordinates[1],
+                    item.location.coordinates[0]
+                  )
+                }
+
+                className="
+                  mt-4
+                  w-full
+                  py-3
+                  rounded-2xl
+                  border
+                  border-green-500
+                  text-green-600
+                  hover:bg-green-50
+                  font-semibold
+                  transition
+                "
+              >
+
+                Open in Maps
+
+              </button>
 
               {/* Accept Button */}
               <button
