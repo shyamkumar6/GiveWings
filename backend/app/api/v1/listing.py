@@ -95,3 +95,21 @@ async def complete_listing(
         return {"message": "Listing marked as completed"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/accepted")
+async def get_accepted_donations(
+    user=Depends(get_current_user)
+):
+
+    donations = await listing_collection.find(
+        {
+            "accepted_by": user["user_id"],
+            "status": "RESERVED"
+        }
+    ).to_list(100)
+
+    for item in donations:
+        item["_id"] = str(item["_id"])
+
+    return donations

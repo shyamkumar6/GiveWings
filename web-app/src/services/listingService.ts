@@ -149,3 +149,32 @@ export const completeDonation =
 
     return await response.json();
 };
+
+export const getAcceptedDonations =
+  async () => {
+
+    const token =
+      localStorage.getItem("token");
+
+    const response = await fetch(
+      `${API}/accepted`,
+      {
+        method: "GET",
+
+        headers: {
+          Authorization:
+            `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+
+      const err =
+        await response.json();
+
+      throw new Error(err.detail);
+    }
+
+    return await response.json();
+};
