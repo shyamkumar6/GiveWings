@@ -1,46 +1,45 @@
-# GiveWings — Guide
-
 # 🌍 GiveWings
 
 ## Transform Surplus Into Impact
 
-GiveWings is a hyperlocal rescue and redistribution platform designed to reduce waste and maximize social impact.
+GiveWings is a hyperlocal rescue and redistribution platform designed to reduce waste and maximize social impact through real-time donation coordination.
 
 The platform connects:
 
-* Restaurants
-* Event organizers
-* Individuals
-* NGOs
-* Volunteers
+- Restaurants
+- Event organizers
+- Individuals
+- NGOs
+- Communities
 
-through a real-time donation rescue ecosystem.
+through a geo-aware operational rescue ecosystem.
 
-Instead of letting usable resources go to waste, GiveWings enables nearby organizations to discover, reserve, and collect donations efficiently.
+Instead of allowing usable resources to go to waste, GiveWings enables nearby NGOs to discover, verify, reserve, navigate to, and collect donations efficiently.
 
 ---
 
 # 🚀 Vision
 
-Today, millions of meals, clothes, books, medicines, furniture, and usable resources are wasted while nearby communities remain underserved.
+Millions of meals and usable resources are wasted daily while nearby communities remain underserved.
 
 GiveWings aims to bridge this gap using:
 
-* Hyperlocal matching
-* Geo-aware discovery
-* Real-time rescue operations
-* Community-driven logistics
-* Impact-focused technology
+- Hyperlocal matching
+- GeoSpatial discovery
+- Real-time rescue coordination
+- Operational logistics workflows
+- Impact-driven technology
 
-The long-term vision is to evolve GiveWings into a multi-resource impact platform supporting:
+The long-term mission is to evolve GiveWings into a scalable multi-resource redistribution platform supporting:
 
 ✅ Food rescue
 ✅ Clothes donation
 ✅ Books & education support
 ✅ Furniture redistribution
-✅ Medicine donation coordination
 ✅ Electronics reuse
-✅ Waste diversion & CO₂ reduction tracking
+✅ Medicine donation coordination
+✅ Waste diversion systems
+✅ CO₂ reduction visibility
 ✅ Volunteer logistics
 ✅ NGO operational routing
 
@@ -48,100 +47,155 @@ The long-term vision is to evolve GiveWings into a multi-resource impact platfor
 
 # ✨ Current Features
 
-## Authentication & Authorization
+# 🔐 Authentication & Authorization
 
-* JWT Authentication
-* Role-Based Access Control (RBAC)
-* Donor and NGO workflows
-
----
-
-## Donor Flow
-
-* Create donations
-* Auto-detect current location
-* GeoSpatial donation storage
-* Food expiry validation
+- JWT Authentication
+- Role-Based Access Control (RBAC)
+- Donor and NGO workflows
+- Protected routes
+- Token-based session management
 
 ---
 
-## NGO Flow
+# 🙋 Donor Workflow
 
-* Discover nearby donations
-* Geo-based donation matching
-* Accept donations
-* Real-time operational workflow
+Donors can:
+
+✅ Register & login
+✅ Create donations
+✅ Auto-detect current location
+✅ Upload donation images
+✅ Add expiry details for food
+✅ Track donation lifecycle
+✅ View donation statuses
 
 ---
 
-## GeoSpatial Intelligence
+# 🏢 NGO Workflow
+
+NGOs can:
+
+✅ Discover nearby donations
+✅ View operational donation details
+✅ See donor details
+✅ View uploaded donation images
+✅ View urgency indicators
+✅ See distance-aware donations
+✅ Navigate using Google Maps
+✅ Accept donations
+✅ Mark pickups as completed
+
+---
+
+# 🌍 GeoSpatial Intelligence
 
 Built using MongoDB GeoJSON + 2dsphere indexing.
 
 Supports:
 
-* Nearby donation discovery
-* Radius filtering
-* Future distance-based routing
-* Hyperlocal rescue operations
+- Nearby donation discovery
+- Radius filtering
+- Distance-based matching
+- Hyperlocal rescue operations
+- Future routing systems
 
 ---
 
-## Real-Time Architecture Foundation
+# 🖼️ Media & Verification Layer
 
-Backend WebSocket infrastructure added for:
+Donation images are uploaded using Cloudinary.
 
-* Live donation alerts
-* NGO notifications
-* Real-time status updates
-* Operational dashboards
+This enables:
+
+- Visual donation verification
+- NGO operational confidence
+- Reduced failed pickups
+- Better pickup coordination
+
+Architecture:
+
+```text
+Frontend
+   ↓
+Backend Upload API
+   ↓
+Cloudinary Storage + CDN
+   ↓
+MongoDB stores image URL
+```
 
 ---
+
+# 🗺️ Navigation & Pickup Coordination
+
+NGOs can directly open donation locations in Google Maps.
+
+This significantly reduces:
+
+- pickup coordination friction
+- rescue delays
+- manual location sharing
+
+Operational focus:
+
+```text
+Reduce time-to-pickup.
+```
 
 # 🏗️ Tech Stack
 
-## Frontend
+# Frontend
 
-* React
-* TypeScript
-* Vite
-* Tailwind CSS
-
----
-
-## Backend
-
-* FastAPI
-* Python
-* JWT Authentication
-* WebSockets
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
 
 ---
 
-## Database
+# Backend
 
-* MongoDB
-* GeoJSON
-* 2dsphere Indexing
+- FastAPI
+- Python
+- JWT Authentication
+- WebSockets
 
 ---
 
-# 🧠 Platform Architecture
+# Database
+
+- MongoDB
+- GeoJSON
+- 2dsphere Indexing
+
+---
+
+# Cloud Services
+
+- Cloudinary (image hosting)
+
+# 🔄 Platform Workflow
 
 ```text
 Donor creates donation
         ↓
 Location captured automatically
         ↓
+Donation image uploaded
+        ↓
 Donation stored using GeoJSON
         ↓
 Nearby NGOs discover donation
         ↓
-NGO accepts donation
+NGO verifies donation visually
+        ↓
+NGO navigates using Google Maps
+        ↓
+Donation accepted
         ↓
 Pickup completed
         ↓
-Impact tracked
+Impact created
 ```
 
 ---
@@ -158,6 +212,7 @@ GiveWings/
 │   │   ├── dependencies/
 │   │   ├── schemas/
 │   │   ├── services/
+│   │   ├── utils/
 │   │   ├── websockets/
 │   │   └── main.py
 │   │
@@ -230,7 +285,7 @@ pip install -r requirements.txt
 
 ---
 
-## Create .env File
+# 3️⃣ Create Environment Variables
 
 Create:
 
@@ -243,14 +298,45 @@ Add:
 ```env
 MONGO_URI=mongodb://localhost:27017
 DATABASE_NAME=givewings
+
 SECRET_KEY=your_secret_key
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=1440
+
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
 ---
 
-## Run Backend
+# ☁️ Cloudinary Setup
+
+Image uploads require a free Cloudinary account.
+
+## Create Account
+
+[https://cloudinary.com](https://cloudinary.com)
+
+After signup:
+
+Dashboard → API Environment
+
+Copy:
+
+- Cloud Name
+- API Key
+- API Secret
+
+Add them into:
+
+```text
+backend/.env
+```
+
+---
+
+# 4️⃣ Run Backend
 
 ```bash
 python -m uvicorn app.main:app --reload
@@ -270,7 +356,7 @@ http://127.0.0.1:8000/docs
 
 ---
 
-# 3️⃣ Frontend Setup
+# 5️⃣ Frontend Setup
 
 ## Navigate to web app
 
@@ -302,7 +388,7 @@ http://localhost:5173
 
 ---
 
-# 🗺️ Location Permissions
+# 📍 Browser Location Permissions
 
 The application uses browser geolocation APIs.
 
@@ -310,104 +396,118 @@ Please allow location access when prompted.
 
 ---
 
-# 🧪 Test Flow
+# 🧪 Complete Test Flow
 
-## Donor
+# Donor Flow
 
 1. Register as DONOR
 2. Login
 3. Create donation
+4. Upload donation image
+5. Submit donation
+6. Track donation status
 
 ---
 
-## NGO
+# NGO Flow
 
 1. Register as NGO
 2. Login
 3. Open Nearby Donations
-4. Accept donation
+4. View donation image
+5. View urgency & distance
+6. Open navigation in Google Maps
+7. Accept donation
+8. Complete pickup
 
 ---
 
-# 📌 Roadmap
+# 🌱 Open Source Workflow
 
-## Phase 1
-
-* [x] Authentication
-* [x] Role-based dashboards
-* [x] Donation creation
-* [x] Nearby donation discovery
-* [x] GeoSpatial search
-* [x] Accept donation workflow
-
----
-
-## Phase 2
-
-* [ ] Accepted donations dashboard
-* [ ] Complete pickup flow
-* [ ] Real-time notifications
-* [ ] Live WebSocket updates
-* [ ] Toast notifications
-* [ ] Image uploads
-
----
-
-## Phase 3
-
-* [ ] Maps integration
-* [ ] Volunteer system
-* [ ] Analytics dashboard
-* [ ] CO₂ impact tracking
-* [ ] Donation heatmaps
-* [ ] Smart routing engine
-
----
-
-## Phase 4
-
-* [ ] Clothes donation support
-* [ ] Books donation support
-* [ ] Furniture redistribution
-* [ ] Medicine support system
-* [ ] Multi-city operational scaling
-
----
-
-# 🤝 Contributing
-
-We welcome contributions from developers, designers, NGOs, students, and impact-driven communities.
-
-## Steps to Contribute
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to your fork
-5. Open a Pull Request
-
----
-
-# 📜 Branch Naming Convention
+# Branch Naming Convention
 
 ```text
-feature/feature-name
-bugfix/issue-name
-hotfix/fix-name
+feat/feature-name
+fix/issue-name
+ui/component-name
+```
+
+Examples:
+
+```text
+feat/google-maps-navigation
+feat/donation-image-upload
+fix/location-permission-flow
+ui/dashboard-redesign
 ```
 
 ---
 
-# 💡 Contribution Ideas
+# 🧾 Contribution Workflow
 
-* UI/UX improvements
-* Maps integration
-* Real-time notifications
-* Accessibility improvements
-* Performance optimization
-* AI-based donation prioritization
-* Volunteer management
-* NGO verification system
+```bash
+# Create feature branch
+git checkout -b feat/your-feature-name
+
+# Commit changes
+git add .
+git commit -m "Your commit message"
+
+# Push branch
+git push -u origin feat/your-feature-name
+```
+
+Then:
+
+1. Open Pull Request
+2. Review changes
+3. Merge into main
+4. Delete feature branch
+
+---
+
+# 📌 Current Roadmap
+
+# ✅ Completed
+
+- [x] JWT Authentication
+- [x] Role-based dashboards
+- [x] Donation creation workflow
+- [x] NGO discovery flow
+- [x] GeoSpatial search
+- [x] Nearby donation matching
+- [x] Donation acceptance workflow
+- [x] Pickup completion workflow
+- [x] Donor donation tracking
+- [x] Google Maps navigation
+- [x] Distance-aware discovery
+- [x] Urgency prioritization
+- [x] Donation image uploads
+- [x] Cloudinary integration
+
+---
+
+# 🚧 In Progress
+
+- [ ] Pickup coordination details
+- [ ] Real-time WebSocket notifications
+- [ ] Mobile responsiveness improvements
+- [ ] Human-readable address resolution
+
+---
+
+# 🚀 Future Scope
+
+- [ ] Volunteer coordination system
+- [ ] CO₂ reduction tracking
+- [ ] NGO operational analytics
+- [ ] Donation heatmaps
+- [ ] Smart routing engine
+- [ ] Clothes donation support
+- [ ] Books donation support
+- [ ] Furniture redistribution
+- [ ] Electronics reuse workflows
+- [ ] Multi-city operational scaling
 
 ---
 
@@ -415,11 +515,19 @@ hotfix/fix-name
 
 Please do NOT commit:
 
-* .env files
-* MongoDB credentials
-* Secret keys
-* API keys
-* Production tokens
+- `.env` files
+- MongoDB credentials
+- Secret keys
+- Cloudinary secrets
+- Production tokens
+
+Use:
+
+```text
+.env.example
+```
+
+for contributor onboarding.
 
 ---
 
@@ -453,11 +561,11 @@ Because technology should not only optimize businesses.
 
 It should also:
 
-* reduce waste
-* empower communities
-* improve resource accessibility
-* build sustainable ecosystems
-* create measurable social impact
+- reduce waste
+- empower communities
+- improve resource accessibility
+- build sustainable ecosystems
+- create measurable social impact
 
 GiveWings is being built with the belief that:
 
@@ -467,15 +575,40 @@ small local actions can create massive collective impact.
 
 ---
 
+# 🤝 Contributing
+
+We welcome contributions from:
+
+- developers
+- designers
+- NGOs
+- students
+- open-source contributors
+- impact-driven communities
+
+Contribution areas:
+
+- UI/UX improvements
+- operational workflows
+- maps integration
+- accessibility
+- performance optimization
+- NGO verification systems
+- real-time systems
+- mobile optimization
+
+---
+
 # ⭐ Support the Project
 
 If you like the idea:
 
-* Star the repository
-* Share the project
-* Contribute
-* Suggest features
-* Help build impact
+- Star the repository
+- Share the project
+- Suggest improvements
+- Open issues
+- Contribute features
+- Help scale impact
 
 ---
 
@@ -491,9 +624,10 @@ Building technology for impact-driven ecosystems.
 
 GiveWings is being developed as an open-source initiative to encourage:
 
-* collaborative innovation
-* sustainable technology
-* social impact engineering
-* community-driven logistics
+- collaborative innovation
+- sustainable technology
+- social impact engineering
+- community-driven logistics
+- waste reduction ecosystems
 
 Together, we can reduce waste and maximize impact.
