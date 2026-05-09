@@ -12,6 +12,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import CreateListingPage from "../pages/donor/CreateListingPage";
 import NearbyDonationsPage from "../pages/ngo/NearbyDonationsPage";
 import AcceptedDonationsPage from "../pages/ngo/AcceptedDonationsPage";
+import MyDonationsPage from "../pages/donor/MyDonationsPage";
 
 export default function AppRoutes() {
   return (
@@ -45,14 +46,23 @@ export default function AppRoutes() {
                 </ProtectedRoute>
             }
             />
-            <Route
-            path="/accepted-donations"
-            element={
-              <ProtectedRoute>
-                <AcceptedDonationsPage />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+        path="/accepted-donations"
+        element={
+          <ProtectedRoute>
+            <AcceptedDonationsPage />
+          </ProtectedRoute>
+        }
+      />
+
+        <Route
+          path="/my-donations"
+          element={
+            <ProtectedRoute>
+              <MyDonationsPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

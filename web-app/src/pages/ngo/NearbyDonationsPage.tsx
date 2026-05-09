@@ -109,6 +109,36 @@ export default function NearbyDonationsPage() {
     }
   };
 
+  const getUrgency = (
+  expiryTime: string
+) => {
+
+  if (!expiryTime)
+    return null;
+
+  const expiry =
+    new Date(expiryTime);
+
+  const now =
+    new Date();
+
+  const diffHours =
+    (
+      expiry.getTime()
+      -
+      now.getTime()
+    ) / (1000 * 60 * 60);
+
+  if (diffHours <= 2) {
+    return "URGENT";
+  }
+
+  if (diffHours <= 6) {
+    return "HIGH PRIORITY";
+  }
+
+  return "NORMAL";
+};
 
   return (
     <DashboardLayout>
@@ -226,7 +256,16 @@ export default function NearbyDonationsPage() {
                 {item.category}
               </div>
 
+              <div className="
+                mt-4
+                text-sm
+                text-green-600
+                font-semibold
+              ">
 
+                📍 {item.distance_km} km away
+
+              </div>
               {/* Title */}
               <h2 className="
                 text-2xl
@@ -245,6 +284,120 @@ export default function NearbyDonationsPage() {
                 {item.description}
               </p>
 
+              {/* Donor Info */}
+              <div className="
+                mt-5
+                space-y-2
+                text-sm
+                text-gray-600
+              ">
+
+                <p>
+                  <span className="font-semibold">
+                    Donor:
+                  </span>
+
+                  {" "}
+                  {item.donor?.name}
+                </p>
+
+                <p>
+                  <span className="font-semibold">
+                    Email:
+                  </span>
+
+                  {" "}
+                  {item.donor?.email}
+                </p>
+
+              </div>
+
+              <div className="
+                  mt-4
+                  text-sm
+                  text-gray-500
+                ">
+
+                  📌 {item.location_label}
+
+                </div>
+
+              <div className="
+                  mt-4
+                  text-sm
+                  text-gray-500
+                ">
+
+                  <p className="font-semibold">
+                    Pickup Coordinates
+                  </p>
+
+                  <p>
+                      Lat:
+                      {" "}
+                      {
+                        item.location.coordinates[1]
+                      }
+                  </p>
+
+                  <p>
+                    Lng:
+                    {" "}
+                    {
+                      item.location.coordinates[0]
+                    }
+                  </p>
+
+                </div>
+                    {
+                      item.expiry_time && (
+
+                        <div className="
+                          mt-4
+                          text-sm
+                          text-red-500
+                          font-medium
+                        ">
+
+                          Expires:
+                          {" "}
+
+                          {
+                            new Date(
+                              item.expiry_time
+                            ).toLocaleString()
+                          }
+
+                        </div>
+
+                      )
+                    }
+
+                    {
+                      item.expiry_time && (
+
+                        <div className="
+                          mt-3
+                          inline-block
+                          px-3
+                          py-1
+                          rounded-full
+                          bg-red-100
+                          text-red-700
+                          text-xs
+                          font-semibold
+                        ">
+
+                          {
+                            getUrgency(
+                              item.expiry_time
+                            )
+                          }
+
+                        </div>
+
+                      )
+                    }
 
               {/* Quantity */}
               <div className="

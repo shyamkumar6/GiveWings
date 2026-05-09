@@ -7,7 +7,11 @@ from app.models.listing_model import listing_helper
 from fastapi import Body
 from bson import ObjectId
 from app.services.listing_service import accept_listing_service
-import traceback
+from bson import ObjectId
+from app.db.mongo import (
+    listing_collection,
+    user_collection
+)
 
 
 router = APIRouter(
@@ -47,29 +51,118 @@ async def create(
             detail=str(e)
         )
     
+def get_area_label(lat, lng):
+
+    # Temporary simplified mapping
+
+    if (
+        17.44 <= lat <= 17.47
+    ):
+        return "Hitech City, Hyderabad"
+
+    if (
+        17.38 <= lat <= 17.40
+    ):
+        return "Central Hyderabad"
+
+    return "Hyderabad"
+
 @router.get("/nearby")
-async def nearby_donations(
+async def nearby_listings(
     lat: float,
     lng: float,
     user=Depends(get_current_user)
 ):
-    donations = await listing_collection.find({
-        "status": "AVAILABLE",
-        "location": {
-            "$near": {
-                "$geometry": {
-                    "type": "Point",
-                    "coordinates": [lng, lat]
-                },
-                "$maxDistance": 10000
+
+    listings = await listing_collection.aggregate([
+    {
+        "$geoNear": {
+
+            "near": {
+                "type": "Point",
+                "coordinates": [lng, lat]
+            },
+
+            "distanceField":
+                "distance",
+
+            "maxDistance":
+                10000,
+
+            "spherical":
+                True,
+
+            "query": {
+                "status": "AVAILABLE"
             }
         }
-    }).to_list(100)
+    }
+    ]).to_list(100)
 
-    for item in donations:
-        item["_id"] = str(item["_id"])
+    result = []
 
-    return donations
+    for item in listings:
+
+        donor = await user_collection.find_one(
+            {
+                "_id":
+                ObjectId(item["donor_id"])
+            }
+        )
+
+        result.append({
+
+            "_id": str(item["_id"]),
+
+            "title": item["title"],
+
+            "description":
+                item["description"],
+
+            "category":
+                item["category"],
+
+            "quantity":
+                item["quantity"],
+
+            "unit":
+                item["unit"],
+
+            "status":
+                item["status"],
+
+            "expiry_time":
+                item.get("expiry_time"),
+
+            "created_at":
+                item.get("created_at"),
+
+            "distance_km":
+                round(
+                    item["distance"] / 1000,
+                    2
+                ),
+
+            "location":
+                item["location"],
+
+            "location_label":
+                get_area_label(
+                    item["location"]["coordinates"][1],
+                    item["location"]["coordinates"][0]
+                ),
+            # Donor Details
+            "donor": {
+
+                "name":
+                    donor.get("name"),
+
+                "email":
+                    donor.get("email"),
+            }
+        })
+
+    return result
 
 
 @router.post("/accept/{listing_id}")
@@ -113,3 +206,54 @@ async def get_accepted_donations(
         item["_id"] = str(item["_id"])
 
     return donations
+
+@router.get("/my-donations")
+async def my_donations(
+    user=Depends(get_current_user)
+):
+
+    donations = await listing_collection.find(
+        {
+            "donor_id":
+                user["user_id"]
+        }
+    ).sort(
+        "created_at",
+        -1
+    ).to_list(100)
+
+
+    result = []
+
+    for item in donations:
+
+        result.append({
+
+            "_id": str(item["_id"]),
+
+            "title":
+                item["title"],
+
+            "description":
+                item["description"],
+
+            "category":
+                item["category"],
+
+            "quantity":
+                item["quantity"],
+
+            "unit":
+                item["unit"],
+
+            "status":
+                item["status"],
+
+            "created_at":
+                item.get("created_at"),
+
+            "expiry_time":
+                item.get("expiry_time"),
+        })
+
+    return result
