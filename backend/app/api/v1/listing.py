@@ -1,19 +1,35 @@
-from fastapi import APIRouter, HTTPException, Depends
-from app.schemas.listing import ListingCreate
-from app.services.listing_service import create_listing
-from app.dependencies.auth_dependency import get_current_user
-from app.db.mongo import listing_collection
-from app.models.listing_model import listing_helper
-from fastapi import Body
-from bson import ObjectId
-from app.services.listing_service import accept_listing_service
-from bson import ObjectId
-from app.db.mongo import (
-    listing_collection,
-    user_collection
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    Depends,
+    UploadFile,
+    File
 )
-from fastapi import UploadFile, File
+
 import cloudinary.uploader
+
+from app.schemas.listing import (
+    ListingCreate
+)
+
+from app.dependencies.auth_dependency import (
+    get_current_user
+)
+
+from app.services.listing_service import (
+
+    create_listing,
+
+    get_nearby_listings,
+
+    accept_listing_service,
+
+    complete_listing_service,
+
+    get_accepted_donations_service,
+
+    get_my_donations_service
+)
 
 
 router = APIRouter(
@@ -22,18 +38,25 @@ router = APIRouter(
 )
 
 
+# =========================================
+# CREATE DONATION
+# =========================================
+
 @router.post("")
 async def create(
     data: ListingCreate,
     user=Depends(get_current_user)
 ):
+
     try:
-        # ✅ Only DONOR can create listings
+
         if user["role"] != "DONOR":
+
             raise HTTPException(
                 status_code=403,
                 detail="Only donors can create listings"
             )
+
 
         listing_id = await create_listing(
             data.dict(),
@@ -41,33 +64,25 @@ async def create(
         )
 
         return {
-            "listing_id": listing_id
+            "listing_id":
+                listing_id
         }
 
     except HTTPException as e:
+
         raise e
 
     except Exception as e:
+
         raise HTTPException(
             status_code=400,
             detail=str(e)
         )
-    
-def get_area_label(lat, lng):
 
-    # Temporary simplified mapping
 
-    if (
-        17.44 <= lat <= 17.47
-    ):
-        return "Hitech City, Hyderabad"
-
-    if (
-        17.38 <= lat <= 17.40
-    ):
-        return "Central Hyderabad"
-
-    return "Hyderabad"
+# =========================================
+# NEARBY DONATIONS
+# =========================================
 
 @router.get("/nearby")
 async def nearby_listings(
@@ -76,191 +91,130 @@ async def nearby_listings(
     user=Depends(get_current_user)
 ):
 
-    listings = await listing_collection.aggregate([
-    {
-        "$geoNear": {
+    try:
 
-            "near": {
-                "type": "Point",
-                "coordinates": [lng, lat]
-            },
-
-            "distanceField":
-                "distance",
-
-            "maxDistance":
-                10000,
-
-            "spherical":
-                True,
-
-            "query": {
-                "status": "AVAILABLE"
-            }
-        }
-    }
-    ]).to_list(100)
-
-    result = []
-
-    for item in listings:
-
-        donor = await user_collection.find_one(
-            {
-                "_id":
-                ObjectId(item["donor_id"])
-            }
+        return await get_nearby_listings(
+            lat,
+            lng
         )
 
-        result.append({
+    except Exception as e:
 
-            "_id": str(item["_id"]),
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
-            "title": item["title"],
 
-            "description":
-                item["description"],
-
-            "category":
-                item["category"],
-
-            "quantity":
-                item["quantity"],
-
-            "unit":
-                item["unit"],
-
-            "status":
-                item["status"],
-
-            "expiry_time":
-                item.get("expiry_time"),
-
-            "created_at":
-                item.get("created_at"),
-
-            "distance_km":
-                round(
-                    item["distance"] / 1000,
-                    2
-                ),
-
-            "location":
-                item["location"],
-
-            "location_label":
-                get_area_label(
-                    item["location"]["coordinates"][1],
-                    item["location"]["coordinates"][0]
-                ),
-            "image_url":
-                item.get("image_url"),
-            # Donor Details
-            "donor": {
-
-                "name":
-                    donor.get("name"),
-
-                "email":
-                    donor.get("email"),
-            }
-        })
-
-    return result
-
+# =========================================
+# ACCEPT DONATION
+# =========================================
 
 @router.post("/accept/{listing_id}")
 async def accept_listing(
     listing_id: str,
     user=Depends(get_current_user)
 ):
-    try:
-        await accept_listing_service(listing_id, user)
-        return {"message": "Listing reserved successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
 
-from app.services.listing_service import complete_listing_service
+    try:
+
+        await accept_listing_service(
+            listing_id,
+            user
+        )
+
+        return {
+            "message":
+                "Listing reserved successfully"
+        }
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+
+# =========================================
+# COMPLETE DONATION
+# =========================================
 
 @router.post("/complete/{listing_id}")
 async def complete_listing(
     listing_id: str,
     user=Depends(get_current_user)
 ):
-    try:
-        await complete_listing_service(listing_id, user)
-        return {"message": "Listing marked as completed"}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
 
+    try:
+
+        await complete_listing_service(
+            listing_id,
+            user
+        )
+
+        return {
+            "message":
+                "Listing marked as completed"
+        }
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+
+# =========================================
+# ACCEPTED DONATIONS
+# =========================================
 
 @router.get("/accepted")
 async def get_accepted_donations(
     user=Depends(get_current_user)
 ):
 
-    donations = await listing_collection.find(
-        {
-            "accepted_by": user["user_id"],
-            "status": "RESERVED"
-        }
-    ).to_list(100)
+    try:
 
-    for item in donations:
-        item["_id"] = str(item["_id"])
+        return await get_accepted_donations_service(
+            user
+        )
 
-    return donations
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+
+# =========================================
+# MY DONATIONS
+# =========================================
 
 @router.get("/my-donations")
 async def my_donations(
     user=Depends(get_current_user)
 ):
 
-    donations = await listing_collection.find(
-        {
-            "donor_id":
-                user["user_id"]
-        }
-    ).sort(
-        "created_at",
-        -1
-    ).to_list(100)
+    try:
+
+        return await get_my_donations_service(
+            user
+        )
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
 
-    result = []
-
-    for item in donations:
-
-        result.append({
-
-            "_id": str(item["_id"]),
-
-            "title":
-                item["title"],
-
-            "description":
-                item["description"],
-
-            "category":
-                item["category"],
-
-            "quantity":
-                item["quantity"],
-
-            "unit":
-                item["unit"],
-
-            "status":
-                item["status"],
-
-            "created_at":
-                item.get("created_at"),
-
-            "expiry_time":
-                item.get("expiry_time"),
-        })
-
-    return result
+# =========================================
+# IMAGE UPLOAD
+# =========================================
 
 @router.post("/upload-image")
 async def upload_listing_image(

@@ -21,6 +21,10 @@ export default function AcceptedDonationsPage() {
     useState(true);
 
 
+  /* =========================
+     FETCH ACCEPTED DONATIONS
+  ========================= */
+
   useEffect(() => {
 
     fetchDonations();
@@ -47,6 +51,10 @@ export default function AcceptedDonationsPage() {
     }
   };
 
+
+  /* =========================
+     COMPLETE PICKUP
+  ========================= */
 
   const handleComplete = async (
     listingId: string
@@ -80,12 +88,35 @@ export default function AcceptedDonationsPage() {
   };
 
 
+  /* =========================
+     OPEN GOOGLE MAPS
+  ========================= */
+
+  const openInMaps = (
+    lat: number,
+    lng: number
+  ) => {
+
+    const url =
+      `https://www.google.com/maps?q=${lat},${lng}`;
+
+    window.open(
+      url,
+      "_blank"
+    );
+  };
+
+
   return (
+
     <DashboardLayout>
 
       <div>
 
-        {/* Header */}
+        {/* =========================
+            HEADER
+        ========================= */}
+
         <div className="mb-8">
 
           <h1 className="
@@ -106,15 +137,25 @@ export default function AcceptedDonationsPage() {
         </div>
 
 
-        {/* Loading */}
+        {/* =========================
+            LOADING
+        ========================= */}
+
         {loading && (
-          <p>
+
+          <p className="
+            text-gray-500
+          ">
             Loading accepted donations...
           </p>
+
         )}
 
 
-        {/* Empty State */}
+        {/* =========================
+            EMPTY STATE
+        ========================= */}
+
         {!loading &&
           donations.length === 0 && (
 
@@ -146,7 +187,10 @@ export default function AcceptedDonationsPage() {
         )}
 
 
-        {/* Cards */}
+        {/* =========================
+            DONATION GRID
+        ========================= */}
+
         <div className="
           grid
           grid-cols-1
@@ -162,94 +206,314 @@ export default function AcceptedDonationsPage() {
               className="
                 bg-white
                 rounded-3xl
-                p-6
+                overflow-hidden
                 shadow-sm
+                border
+                border-gray-100
               "
             >
 
-              {/* Category */}
-              <div className="
-                inline-block
-                px-3
-                py-1
-                rounded-full
-                bg-green-100
-                text-green-700
-                text-sm
-                font-medium
-              ">
-                {item.category}
-              </div>
+              {/* =========================
+                  IMAGE
+              ========================= */}
+
+              {
+                item.image_url && (
+
+                  <img
+                    src={item.image_url}
+                    alt={item.title}
+
+                    className="
+                      w-full
+                      h-56
+                      object-cover
+                    "
+                  />
+
+                )
+              }
 
 
-              {/* Title */}
-              <h2 className="
-                text-2xl
-                font-bold
-                mt-4
-              ">
-                {item.title}
-              </h2>
+              <div className="p-6">
+
+                {/* Category */}
+
+                <div className="
+                  inline-block
+                  px-3
+                  py-1
+                  rounded-full
+                  bg-green-100
+                  text-green-700
+                  text-sm
+                  font-medium
+                ">
+                  {item.category}
+                </div>
 
 
-              {/* Description */}
-              <p className="
-                text-gray-600
-                mt-3
-              ">
-                {item.description}
-              </p>
+                {/* Title */}
+
+                <h2 className="
+                  text-2xl
+                  font-bold
+                  mt-4
+                ">
+                  {item.title}
+                </h2>
 
 
-              {/* Quantity */}
-              <div className="
-                mt-6
-                text-lg
-                font-semibold
-              ">
-                {item.quantity}
-                {" "}
-                {item.unit}
-              </div>
+                {/* Description */}
+
+                <p className="
+                  text-gray-600
+                  mt-3
+                ">
+                  {item.description}
+                </p>
 
 
-              {/* Status */}
-              <div className="
-                mt-4
-                inline-block
-                px-3
-                py-1
-                rounded-full
-                bg-blue-100
-                text-blue-700
-                text-sm
-                font-medium
-              ">
-                RESERVED
-              </div>
+                {/* Quantity */}
+
+                <div className="
+                  mt-6
+                  text-lg
+                  font-semibold
+                ">
+                  {item.quantity}
+                  {" "}
+                  {item.unit}
+                </div>
 
 
-              {/* Complete Button */}
-              <button
+                {/* Donor Details */}
 
-                onClick={() =>
-                  handleComplete(item._id)
+                <div className="
+                  mt-6
+                  space-y-2
+                  text-sm
+                  text-gray-700
+                ">
+
+                  <p>
+
+                    <span className="
+                      font-semibold
+                    ">
+                      Donor:
+                    </span>
+
+                    {" "}
+
+                    {item.donor?.name}
+
+                  </p>
+
+                  <p>
+
+                    <span className="
+                      font-semibold
+                    ">
+                      Email:
+                    </span>
+
+                    {" "}
+
+                    {item.donor?.email}
+
+                  </p>
+
+                </div>
+
+
+                {/* Contact Number */}
+
+                {
+                  item.phone_number && (
+
+                    <div className="
+                      mt-4
+                      text-sm
+                      text-gray-700
+                    ">
+
+                      <span className="
+                        font-semibold
+                      ">
+                        Contact:
+                      </span>
+
+                      {" "}
+
+                      {item.phone_number}
+
+                    </div>
+
+                  )
                 }
 
-                className="
-                  mt-6
-                  w-full
-                  py-3
-                  rounded-2xl
-                  bg-black
-                  hover:bg-zinc-800
-                  text-white
-                  font-semibold
-                  transition
-                "
-              >
-                Mark Pickup Complete
-              </button>
+
+                {/* Pickup Instructions */}
+
+                {
+                  item.pickup_instructions && (
+
+                    <div className="
+                      mt-5
+                      bg-gray-50
+                      border
+                      border-gray-200
+                      rounded-2xl
+                      p-4
+                    ">
+
+                      <p className="
+                        font-semibold
+                        text-sm
+                        text-gray-700
+                      ">
+                        Pickup Instructions
+                      </p>
+
+                      <p className="
+                        mt-2
+                        text-sm
+                        text-gray-600
+                        leading-relaxed
+                      ">
+
+                        {
+                          item.pickup_instructions
+                        }
+
+                      </p>
+
+                    </div>
+
+                  )
+                }
+
+
+                {/* Location */}
+
+                <div className="
+                  mt-5
+                  text-sm
+                  text-gray-500
+                ">
+
+                  📌 {item.location_label}
+
+                </div>
+
+
+                {/* Coordinates */}
+
+                <div className="
+                  mt-4
+                  text-sm
+                  text-gray-500
+                ">
+
+                  <p className="
+                    font-semibold
+                  ">
+                    Pickup Coordinates
+                  </p>
+
+                  <p>
+                    Lat:
+                    {" "}
+                    {
+                      item.location.coordinates[1]
+                    }
+                  </p>
+
+                  <p>
+                    Lng:
+                    {" "}
+                    {
+                      item.location.coordinates[0]
+                    }
+                  </p>
+
+                </div>
+
+
+                {/* Status */}
+
+                <div className="
+                  mt-5
+                  inline-block
+                  px-3
+                  py-1
+                  rounded-full
+                  bg-blue-100
+                  text-blue-700
+                  text-sm
+                  font-medium
+                ">
+                  RESERVED
+                </div>
+
+
+                {/* Open Maps */}
+
+                <button
+
+                  onClick={() =>
+                    openInMaps(
+                      item.location.coordinates[1],
+                      item.location.coordinates[0]
+                    )
+                  }
+
+                  className="
+                    mt-6
+                    w-full
+                    py-3
+                    rounded-2xl
+                    border
+                    border-green-500
+                    text-green-600
+                    hover:bg-green-50
+                    font-semibold
+                    transition
+                  "
+                >
+
+                  Open in Maps
+
+                </button>
+
+
+                {/* Complete Button */}
+
+                <button
+
+                  onClick={() =>
+                    handleComplete(item._id)
+                  }
+
+                  className="
+                    mt-4
+                    w-full
+                    py-3
+                    rounded-2xl
+                    bg-black
+                    hover:bg-zinc-800
+                    text-white
+                    font-semibold
+                    transition
+                  "
+                >
+
+                  Mark Pickup Complete
+
+                </button>
+
+              </div>
 
             </div>
 
@@ -260,5 +524,6 @@ export default function AcceptedDonationsPage() {
       </div>
 
     </DashboardLayout>
+
   );
 }

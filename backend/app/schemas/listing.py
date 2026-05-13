@@ -20,4 +20,7 @@ class ListingCreate(BaseModel):
     location: Location  # ✅ NEW
     image_url: Optional[str] = None
     expiry_time: Optional[datetime] = None
+    phone_number: Optional[str] = None
+
+    pickup_instructions: Optional[str] = None
     metadata: Optional[Dict] = None
