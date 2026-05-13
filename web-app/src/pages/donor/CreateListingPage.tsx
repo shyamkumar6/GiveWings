@@ -47,6 +47,14 @@ export default function CreateListingPage() {
   const [imagePreview, setImagePreview] =
     useState("");
 
+  const [phoneNumber, setPhoneNumber] =
+  useState("");
+
+  const [
+      pickupInstructions,
+      setPickupInstructions
+    ] = useState("");
+
   useEffect(() => {
 
   navigator.geolocation.getCurrentPosition(
@@ -122,6 +130,10 @@ export default function CreateListingPage() {
             ],
         },
         image_url: imageUrl,
+        phone_number: phoneNumber,
+
+        pickup_instructions:
+          pickupInstructions,
       });
 
       alert("Donation  created successfully");
@@ -245,7 +257,90 @@ Fresh surplus food from event
               "
             />
           </div>
+          {/* Contact Number */}
 
+          <div className="mt-6">
+
+            <label className="
+              block
+              mb-2
+              font-medium
+            ">
+              Contact Number
+            </label>
+
+            <input
+              type="text"
+
+              value={phoneNumber}
+
+              onChange={(e) =>
+                setPhoneNumber(
+                  e.target.value
+                )
+              }
+
+              placeholder="Optional contact number"
+
+              className="
+                w-full
+                border
+                border-gray-300
+                rounded-2xl
+                px-4
+                py-3
+                outline-none
+                focus:ring-2
+                focus:ring-green-500
+              "
+            />
+
+          </div>
+
+
+          {/* Pickup Instructions */}
+
+          <div className="mt-6">
+
+            <label className="
+              block
+              mb-2
+              font-medium
+            ">
+              Pickup Instructions
+            </label>
+
+            <textarea
+
+              value={pickupInstructions}
+
+              onChange={(e) =>
+                setPickupInstructions(
+                  e.target.value
+                )
+              }
+
+              placeholder="Example:
+Call before arriving,
+pickup from back gate,
+collect before 8 PM"
+
+              rows={4}
+
+              className="
+                w-full
+                border
+                border-gray-300
+                rounded-2xl
+                px-4
+                py-3
+                outline-none
+                focus:ring-2
+                focus:ring-green-500
+              "
+            />
+
+          </div>
           {/* Expiry */}
           <div className="mt-6">
             <p className="mb-2 font-medium">
